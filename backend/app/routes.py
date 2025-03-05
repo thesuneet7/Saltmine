@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models import GridRequest
-from app.services import fill_grid_periphery, fill_grid_diagonal
+from app.services import fill_grid_periphery
 
 router = APIRouter()
 
