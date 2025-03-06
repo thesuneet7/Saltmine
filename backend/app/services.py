@@ -155,3 +155,51 @@ def adjacency_const(n, m, red, green, blue, adjacency_cons):
                 placed_tiles[grid[i][j]] += 1
 
     return grid
+
+
+def no_adjcol(n, m, red, green, blue):
+    """Generates a valid n x m grid with no two adjacent tiles having the same color."""
+    def is_valid(grid, row, col, color, n, m):
+        """Checks if placing the given color at (row, col) is valid."""
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
+
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            if 0 <= r < n and 0 <= c < m and grid[r][c] == color:
+                return False  # Adjacent tile has the same color
+
+        return True
+
+    def solve(grid, row, col, color_counts, n, m):
+        """Recursively fills the grid ensuring no two adjacent tiles have the same color."""
+        if row == n:
+            return True  # Successfully filled the entire grid
+
+        next_row, next_col = (row, col + 1) if col + 1 < m else (row + 1, 0)
+
+        for color in ['R', 'G', 'B']:
+            if color_counts[color] > 0 and is_valid(grid, row, col, color, n, m):
+                grid[row][col] = color  # Place color
+                color_counts[color] -= 1
+
+                if solve(grid, next_row, next_col, color_counts, n, m):
+                    return True  # If valid solution found, return True
+
+                grid[row][col] = None  # Backtrack
+                color_counts[color] += 1
+
+        return False  # No valid color found
+
+    total_tiles = n * m
+    if red + green + blue != total_tiles:
+        print("Invalid input: Total number of tiles does not match grid size!")
+        return None
+
+    grid = [[None for _ in range(m)] for _ in range(n)]
+    color_counts = {'R': red, 'G': green, 'B': blue}
+
+    if not solve(grid, 0, 0, color_counts, n, m):
+        print("No valid grid configuration found!")
+        return None
+
+    return grid
