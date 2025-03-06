@@ -1,29 +1,34 @@
-def fill_grid_periphery(dimension, red, green, blue, periphery_colors):
-    grid = [[None] * dimension for _ in range(dimension)]
+def fill_grid_periphery(n, m, red, green, blue, periphery_colors):
+    # Initialize the grid with None
+    grid = [[None] * m for _ in range(n)]
     color_counts = {'R': red, 'G': green, 'B': blue}
 
     # Define periphery positions
-    periphery_positions = [(0, j) for j in range(dimension)] + [(dimension - 1, j) for j in range(dimension)] + \
-                          [(i, 0) for i in range(1, dimension - 1)] + [(i, dimension - 1) for i in range(1, dimension - 1)]
+    periphery_positions = [(0, j) for j in range(m)] + [(n - 1, j) for j in range(m)] + \
+                          [(i, 0) for i in range(1, n - 1)] + [(i, m - 1) for i in range(1, n - 1)]
 
-    # Assign periphery colors
-    index = 0
+    # Shuffle periphery positions to make selection random
+    random.shuffle(periphery_positions)
+
+    # Assign periphery colors in the order given by the user
+    for color in periphery_colors:
+        for i, j in periphery_positions:
+            if grid[i][j] is None and color_counts[color] > 0:
+                grid[i][j] = color
+                color_counts[color] -= 1
+
+    # Fill remaining periphery positions with available colors
     for i, j in periphery_positions:
-        if index < len(periphery_colors) and color_counts[periphery_colors[index]] > 0:
-            grid[i][j] = periphery_colors[index]
-            color_counts[periphery_colors[index]] -= 1
-            index += 1
-        else:
-            # If selected periphery colors run out, use any available color
+        if grid[i][j] is None:
             for color in 'RGB':
                 if color_counts[color] > 0:
                     grid[i][j] = color
                     color_counts[color] -= 1
                     break
 
-    # Fill the rest of the grid with available colors
-    for i in range(dimension):
-        for j in range(dimension):
+    # Fill the remaining empty spaces in the grid
+    for i in range(m):
+        for j in range(m):
             if grid[i][j] is None:
                 for color in 'RGB':
                     if color_counts[color] > 0:

@@ -10,8 +10,10 @@
     </div>
 
     <div class="form-container" v-if="activeTab === 'periphery'">
-      <label>Dimension:</label>
-      <input type="number" v-model="peripheryForm.dimension" />
+      <label>Row:</label>
+      <input type="number" v-model="peripheryForm.n" />
+      <label>Column:</label>
+      <input type="number" v-model="peripheryForm.m" />
       <label>Red:</label>
       <input type="number" v-model="peripheryForm.red" />
       <label>Green:</label>
@@ -93,7 +95,8 @@ export default {
     return {
       activeTab: 'periphery',
       peripheryForm: {
-        dimension: 5,
+        n: 5,
+        m: 5,
         red: 5,
         green: 5,
         blue: 5,
@@ -136,7 +139,8 @@ export default {
     },
     generatePeripheryGrid() {
       const payload = {
-        dimension: this.peripheryForm.dimension,
+        n: this.peripheryForm.n,
+        m: this.peripheryForm.m,
         red: this.peripheryForm.red,
         green: this.peripheryForm.green,
         blue: this.peripheryForm.blue,
@@ -147,7 +151,8 @@ export default {
       console.log("Sending Payload:", payload);
       axios
         .post('http://127.0.0.1:8000/generate-grid', {
-          dimension: this.peripheryForm.dimension,
+          n: this.peripheryForm.n,
+          m: this.peripheryForm.m,
           red: this.peripheryForm.red,
           green: this.peripheryForm.green,
           blue: this.peripheryForm.blue,
