@@ -64,3 +64,94 @@ def fill_grid_diagonal(dimension, red, green, blue, diagonal_colors):
                         break
 
     return grid
+
+import random
+def adjacency_const(n, m, red, green, blue, adjacency_cons):
+    tile_counts = {}
+    tile_counts['R'] = red
+    tile_counts['G'] = green
+    tile_counts['B'] = blue
+    grid = [[' ' for _ in range(m)] for _ in range(n)]
+
+    tile1, tile2 = adjacency_cons[0], adjacency_cons[1]
+    if tile_counts[tile1] > tile_counts[tile2]:
+        tile1, tile2 = tile2, tile1
+
+    if tile_counts[tile2] > 4 * tile_counts[tile1]:
+        print("Error: Not possible to satisfy the constraint.")
+        return None, None, None
+
+    placed_tiles = {'R': 0, 'G': 0, 'B': 0}
+    adjacent_pairs = 0
+    placed_positions = []
+
+    row, col = 1, 1
+    while placed_tiles[tile1] < tile_counts[tile1] and placed_tiles[tile2] < tile_counts[tile2]:
+        if grid[row][col] == ' ':
+            grid[row][col] = tile1
+            placed_tiles[tile1] += 1
+            placed_positions.append((row, col))
+
+            adjacent_positions = [
+                (row, col-1), (row, col+1),
+                (row-1, col), (row+1, col)
+            ]
+
+            for adj_row, adj_col in adjacent_positions:
+                if (0 <= adj_row < n and 0 <= adj_col < m and
+                    grid[adj_row][adj_col] == ' ' and
+                    placed_tiles[tile2] < tile_counts[tile2]):
+                    grid[adj_row][adj_col] = tile2
+                    placed_tiles[tile2] += 1
+                    adjacent_pairs += 1
+
+        col += 3
+        if col >= m:
+            col = 1
+            row += 3
+            if row >= n:
+                break
+
+    if placed_tiles[tile1] < tile_counts[tile1]:
+        for i, j in placed_positions:
+            diagonal_positions = [
+                (i-1, j-1), (i-1, j+1),
+                (i+1, j-1), (i+1, j+1)
+            ]
+            for di, dj in diagonal_positions:
+                if (0 <= di < n and 0 <= dj < m and grid[di][dj] == ' ' and placed_tiles[tile1] < tile_counts[tile1]):
+                    grid[di][dj] = tile1
+                    placed_tiles[tile1] += 1
+                    if placed_tiles[tile1] == tile_counts[tile1]:
+                        break
+            if placed_tiles[tile1] == tile_counts[tile1]:
+                break
+
+    if placed_tiles[tile2] < tile_counts[tile2]:
+        for i, j in placed_positions:
+            diagonal_positions = [
+                (i-1, j-1), (i-1, j+1),
+                (i+1, j-1), (i+1, j+1)
+            ]
+            for di, dj in diagonal_positions:
+                if (0 <= di < n and 0 <= dj < m and grid[di][dj] == ' ' and placed_tiles[tile2] < tile_counts[tile2]):
+                    grid[di][dj] = tile2
+                    placed_tiles[tile2] += 1
+                    if placed_tiles[tile2] == tile_counts[tile2]:
+                        break
+            if placed_tiles[tile2] == tile_counts[tile2]:
+                break
+
+    remaining_tiles = []
+    for tile, count in tile_counts.items():
+        remaining = count - placed_tiles[tile]
+        remaining_tiles.extend([tile] * remaining)
+    random.shuffle(remaining_tiles)
+
+    for i in range(n):
+        for j in range(m):
+            if grid[i][j] == ' ' and remaining_tiles:
+                grid[i][j] = remaining_tiles.pop()
+                placed_tiles[grid[i][j]] += 1
+
+    return grid
