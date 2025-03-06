@@ -267,3 +267,70 @@ def block_col(n, m, red, green, blue, block_color, block_size, block_count):
     fill_remaining_tiles(grid, color_counts)
 
     return grid
+
+import sys
+import random
+
+def patternn(n, m, red, green, blue, pattern_length, pattern):
+    """Generates an n × m grid using the specified tile pattern and fills remaining spaces randomly."""
+    def max_patterns(X, Y, Z, pattern):
+        x = pattern.count('R')
+        y = pattern.count('G')
+        z = pattern.count('B')
+        x = X // x if x > 0 else float('inf')
+        y = Y // y if y > 0 else float('inf')
+        z = Z // z if z > 0 else float('inf')
+        return min(x, y, z)
+
+    def fill_with_patterns(grid, pattern, pattern_length, color_counts, n, m, max_patterns):
+        row, applied_patterns = 0, 0
+        while applied_patterns < max_patterns and row < n:
+            for start_col in range(0, m, pattern_length):
+                end_col = start_col + pattern_length
+                if end_col > m:
+                    break
+                pattern_slice = list(pattern[:end_col - start_col])
+                if all(color_counts[color] >= pattern_slice.count(color) for color in pattern_slice):
+                    grid[row][start_col:end_col] = pattern_slice
+                    for color in pattern_slice:
+                        color_counts[color] -= 1
+                    applied_patterns += 1
+                if applied_patterns >= max_patterns:
+                    return
+            row += 1
+
+    def fill_remaining(grid, color_counts, n, m):
+        available_tiles = [color for color, count in color_counts.items() for _ in range(count)]
+        random.shuffle(available_tiles)
+        tile_index = 0
+        for row in range(n):
+            for col in range(m):
+                if grid[row][col] is None and tile_index < len(available_tiles):
+                    grid[row][col] = available_tiles[tile_index]
+                    tile_index += 1
+
+    total_tiles = n * m
+    given_tiles = red + green + blue
+    if given_tiles != total_tiles:
+        print("\n❌ Invalid Configuration: The total number of tiles does not match the grid size!")
+        sys.exit(1)
+    if pattern_length > m:
+        print("\n❌ This configuration cannot be possible! The pattern length exceeds the number of columns.")
+        sys.exit(1)
+    if len(pattern) != pattern_length:
+        print("\n❌ Invalid Pattern: The specified pattern length does not match the given pattern!")
+        sys.exit(1)
+
+    max_patterns_count = max_patterns(red, green, blue, pattern)
+    print(f"\n✅ Maximum number of patterns that can be formed: {max_patterns_count}")
+    if max_patterns_count == 0:
+        print("\n❌ This configuration cannot be possible!")
+        sys.exit(1)
+    
+    grid = [[None for _ in range(m)] for _ in range(n)]
+    color_counts = {'R': red, 'G': green, 'B': blue}
+    
+    fill_with_patterns(grid, pattern, pattern_length, color_counts, n, m, max_patterns_count)
+    fill_remaining(grid, color_counts, n, m)
+    
+    return grid

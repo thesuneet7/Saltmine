@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi import Request
 from app.models import GridRequest
-from app.services import fill_grid_periphery, fill_grid_diagonal, adjacency_const, no_adjcol, block_col
+from app.services import fill_grid_periphery, fill_grid_diagonal, adjacency_const, no_adjcol, block_col, patternn
 
 router = APIRouter()
 
@@ -17,6 +17,8 @@ def generate_grid(request: GridRequest):
         grid = no_adjcol(request.n, request.m, request.red, request.green, request.blue)
     elif request.constraint_type == "block":
         grid = block_col(request.n, request.m, request.red, request.green, request.blue, request.block_color, request.block_size, request.block_count)
+    elif request.constraint_type == "patternnn":
+        grid = patternn(request.n, request.m, request.red, request.green, request.blue, request.pattern_length, request.pattern)
     else:
         return {"error": "Invalid constraint type"}
     

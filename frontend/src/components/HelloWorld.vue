@@ -42,7 +42,8 @@ export default {
         { id: 'diagonal', label: 'Diagonal' },
         { id: 'adj_const', label: 'Adjacency' },
         { id: 'no_adj_const', label: 'No Adjacency' },
-        { id: 'block', label: 'Coloured Block' }
+        { id: 'block', label: 'Coloured Block' },
+        { id: 'patternnn', label: 'Pattern' }
       ],
       formValues: {
         periphery: { n: 5, m: 5, red: 5, green: 5, blue: 5, peripheryColorsInput: 'RGB' },
@@ -50,6 +51,7 @@ export default {
         adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5, adjColorsInput: 'RGB' },
         no_adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5 },
         block: { n: 5, m: 5, red: 5, green: 5, blue: 5, block_color: 'R', block_size: 5, block_count: 5 },
+        patternnn: { n: 5, m: 5, red: 5, green: 5, blue: 5, pattern_length: 5, patternColorsInput: 'RGB' }
       },
       grid: [],
       error: null,
@@ -70,8 +72,8 @@ export default {
         payload.diagonal_colors = form.diagonalColorsInput.split('');
       if (Object.prototype.hasOwnProperty.call(form, 'adjColorsInput')) 
         payload.adjacency_cons = form.adjColorsInput.split('');
-      //if (Object.prototype.hasOwnProperty.call(form, 'blockColorsInput')) 
-        //payload.block_color = form.blockColorsInput.split('');
+      if (Object.prototype.hasOwnProperty.call(form, 'patternColorsInput')) 
+        payload.pattern = form.patternColorsInput.split('');
 
 
       
