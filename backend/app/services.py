@@ -207,3 +207,63 @@ def no_adjcol(n, m, red, green, blue):
         return None
 
     return grid
+
+
+def block_col(n, m, red, green, blue, block_color, block_size, block_count):
+    """Generates a valid n × m grid with block_size × block_size blocks and fills remaining spaces randomly."""
+    def place_blocks(grid, block_color, block_size, block_count, color_counts):
+        """Places the required number of block_size × block_size blocks of a specific color in the grid."""
+        required_tiles = block_count * (block_size ** 2)
+
+        if required_tiles > color_counts[block_color]:
+            print(f"Error: Not enough {block_color} tiles to form {block_count} blocks of size {block_size}×{block_size}.")
+            return False
+
+        placed_blocks = 0
+        for _ in range(block_count):
+            found = False
+            for _ in range(100):
+                row = random.randint(0, n - block_size)
+                col = random.randint(0, m - block_size)
+
+                if all(grid[r][c] is None for r in range(row, row + block_size) for c in range(col, col + block_size)):
+                    for r in range(row, row + block_size):
+                        for c in range(col, col + block_size):
+                            grid[r][c] = block_color
+
+                    placed_blocks += 1
+                    color_counts[block_color] -= (block_size ** 2)
+                    found = True
+                    break
+
+            if not found:
+                print(f"Warning: Could not place all {block_count} blocks.")
+                return False
+
+        return True
+
+    def fill_remaining_tiles(grid, color_counts):
+        """Fills the remaining tiles randomly while ensuring total tile counts are met."""
+        available_positions = [(r, c) for r in range(n) for c in range(m) if grid[r][c] is None]
+        random.shuffle(available_positions)
+
+        for color in ['R', 'G', 'B']:
+            for _ in range(color_counts[color]):
+                if available_positions:
+                    row, col = available_positions.pop()
+                    grid[row][col] = color
+
+    total_tiles = n * m
+    if red + green + blue != total_tiles:
+        print("Error: The total number of tiles must be equal to n × m.")
+        return None
+
+    grid = [[None for _ in range(m)] for _ in range(n)]
+    color_counts = {'R': red, 'G': green, 'B': blue}
+
+    if not place_blocks(grid, block_color, block_size, block_count, color_counts):
+        return None
+
+    fill_remaining_tiles(grid, color_counts)
+
+    return grid

@@ -10,7 +10,7 @@
     <div class="form-container" v-if="activeTab">
       <template v-for="(value, key) in formValues[activeTab]" :key="key">
         <label>{{ key.replace(/([A-Z])/g, ' $1') }}:</label>
-        <input v-if="key.includes('ColorsInput')" type="text" v-model="formValues[activeTab][key]" />
+        <input v-if="key.includes('ColorsInput') || key === 'block_color'" type="text" v-model="formValues[activeTab][key]" />
         <input v-else type="number" v-model="formValues[activeTab][key]" />
       </template>
       <button class="generate-btn" @click="generateGrid">Generate Grid</button>
@@ -41,13 +41,15 @@ export default {
         { id: 'periphery', label: 'Periphery' },
         { id: 'diagonal', label: 'Diagonal' },
         { id: 'adj_const', label: 'Adjacency' },
-        { id: 'no_adj_const', label: 'No Adjacency' }
+        { id: 'no_adj_const', label: 'No Adjacency' },
+        { id: 'block', label: 'Coloured Block' }
       ],
       formValues: {
         periphery: { n: 5, m: 5, red: 5, green: 5, blue: 5, peripheryColorsInput: 'RGB' },
         diagonal: { dimension: 5, red: 5, green: 5, blue: 5, diagonalColorsInput: 'RGB' },
         adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5, adjColorsInput: 'RGB' },
-        no_adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5 }
+        no_adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5 },
+        block: { n: 5, m: 5, red: 5, green: 5, blue: 5, block_color: 'R', block_size: 5, block_count: 5 },
       },
       grid: [],
       error: null,
@@ -68,6 +70,8 @@ export default {
         payload.diagonal_colors = form.diagonalColorsInput.split('');
       if (Object.prototype.hasOwnProperty.call(form, 'adjColorsInput')) 
         payload.adjacency_cons = form.adjColorsInput.split('');
+      //if (Object.prototype.hasOwnProperty.call(form, 'blockColorsInput')) 
+        //payload.block_color = form.blockColorsInput.split('');
 
 
       
