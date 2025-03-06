@@ -12,3 +12,4 @@ class GridRequest(BaseModel):
     periphery_colors: Optional[List[str]] = None
     diagonal_colors: Optional[List[str]] = None
     adjacency_cons: Optional[List[str]] = None
+    no_adjacency_cons: Optional[List[str]] = None

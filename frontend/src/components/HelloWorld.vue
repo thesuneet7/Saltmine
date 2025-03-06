@@ -6,6 +6,7 @@
       <button :class="{ active: activeTab === 'periphery' }" @click="setActiveTab('periphery')">Periphery</button>
       <button :class="{ active: activeTab === 'diagonal' }" @click="setActiveTab('diagonal')">Diagonal</button>
       <button :class="{ active: activeTab === 'adj_const' }" @click="setActiveTab('adj_const')">Adjacency</button>
+      <button :class="{ active: activeTab === 'no_adj_const' }" @click="setActiveTab('no_adj_const')">No Adjacency</button>
     </div>
 
     <div class="form-container" v-if="activeTab === 'periphery'">
@@ -47,10 +48,26 @@
       <input type="number" v-model="adjForm.green" />
       <label>Blue:</label>
       <input type="number" v-model="adjForm.blue" />
-      <label>Adjacent Colors (e.g., RGB):</label>
+      <label>Adjacent Colours (e.g., RGB):</label>
       <input type="text" v-model="adjForm.adjColorsInput" />
       <button class="generate-btn" @click="generateAdjacentGrid">Generate Grid</button>
     </div>
+
+    <div class="form-container" v-if="activeTab === 'no_adj_const'">
+      <label>Row:</label>
+      <input type="number" v-model="no_adjForm.n" />
+      <label>Column:</label>
+      <input type="number" v-model="no_adjForm.m" />
+      <label>Red:</label>
+      <input type="number" v-model="no_adjForm.red" />
+      <label>Green:</label>
+      <input type="number" v-model="no_adjForm.green" />
+      <label>Blue:</label>
+      <input type="number" v-model="no_adjForm.blue" />
+      <button class="generate-btn" @click="generateNoAdjacentGrid">Generate Grid</button>
+    </div>
+
+    
 
     <div v-if="grid.length > 0" class="grid-container">
       <table>
@@ -98,6 +115,14 @@ export default {
         green: 5,
         blue: 5,
         adjColorsInput: 'RGB',
+      },
+
+      no_adjForm: {
+        n: 5,
+        m: 5,
+        red: 5,
+        green: 5,
+        blue: 5,
       },
       grid: [],
       error: null,
@@ -189,6 +214,35 @@ export default {
           blue: this.adjForm.blue,
           constraint_type: 'adj_const',
           adjacency_cons: this.adjForm.adjColorsInput.split(''),
+        })
+        .then(response => {
+          this.grid = response.data.grid;
+          this.error = null;
+        })
+        .catch(error => {
+          this.grid = [];
+          this.error = error.response?.data?.error || 'An error occurred.';
+        });
+    },
+    generateNoAdjacentGrid() {
+      const payload = {
+        n: this.no_adjForm.n,
+        m: this.no_adjForm.m,
+        red: this.no_adjForm.red,
+        green: this.no_adjForm.green,
+        blue: this.no_adjForm.blue,
+        constraint_type: 'no_adj_const',
+  };
+      
+      console.log("Sending Payload:", payload);
+      axios
+        .post('http://127.0.0.1:8000/generate-grid', {
+          n: this.no_adjForm.n,
+          m: this.no_adjForm.m,
+          red: this.no_adjForm.red,
+          green: this.no_adjForm.green,
+          blue: this.no_adjForm.blue,
+          constraint_type: 'no_adj_const',
         })
         .then(response => {
           this.grid = response.data.grid;
