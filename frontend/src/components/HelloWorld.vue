@@ -9,7 +9,7 @@
 
     <div class="form-container" v-if="activeTab">
       <template v-for="(value, key) in formValues[activeTab]" :key="key">
-        <label>{{ key.replace(/([A-Z])/g, ' $1') }}:</label>
+        <label>{{ fieldLabels[key] || key }}:</label>
         <input v-if="key.includes('ColorsInput') || key === 'block_color'" type="text" v-model="formValues[activeTab][key]" />
         <input v-else type="number" v-model="formValues[activeTab][key]" />
       </template>
@@ -53,6 +53,22 @@ export default {
         block: { n: 5, m: 5, red: 5, green: 5, blue: 5, block_color: 'R', block_size: 5, block_count: 5 },
         patternnn: { n: 5, m: 5, red: 5, green: 5, blue: 5, pattern_length: 5, patternColorsInput: 'RGB' }
       },
+      fieldLabels: {
+  n: "Rows",
+  m: "Columns",
+  red: "Red Count",
+  green: "Green Count",
+  blue: "Blue Count",
+  peripheryColorsInput: "Periphery Colors",
+  diagonalColorsInput: "Diagonal Colors",
+  adjColorsInput: "Adjacency Colors",
+  patternColorsInput: "Pattern Colors",
+  dimension: "Dimension",
+  block_color: "Block Color",
+  block_size: "Block Size",
+  block_count: "Block Count",
+  pattern_length: "Pattern Length"
+},
       grid: [],
       error: null,
     };

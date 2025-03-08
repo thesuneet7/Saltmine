@@ -41,24 +41,45 @@ def fill_grid_periphery(n, m, red, green, blue, periphery_colors):
 def fill_grid_diagonal(dimension, red, green, blue, diagonal_colors):
     grid = [[None] * dimension for _ in range(dimension)]
     color_counts = {'R': red, 'G': green, 'B': blue}
-    diagonal_positions = [(i, i) for i in range(dimension)]
-
-    # Assign diagonal colors
-    index = 0
-    for i, j in diagonal_positions:
-        if index < len(diagonal_colors) and color_counts[diagonal_colors[index]] > 0:
-            grid[i][j] = diagonal_colors[index]
-            color_counts[diagonal_colors[index]] -= 1
-            index += 1
-        else:
-            # If selected diagonal colors run out, use any available color
+    
+    # Check if we have exactly the right number of colors to fill the grid
+    total_cells = dimension * dimension
+    total_colors = red + green + blue
+    
+    if total_colors != total_cells:
+        return None  # Incorrect number of colors
+    
+    # Get all diagonal positions (both main diagonal and anti-diagonal)
+    main_diagonal = [(i, i) for i in range(dimension)]
+    anti_diagonal = [(i, dimension-1-i) for i in range(dimension)]
+    
+    # Remove duplicates (center cell in odd-sized grids)
+    all_diagonal_positions = []
+    for pos in main_diagonal + anti_diagonal:
+        if pos not in all_diagonal_positions:
+            all_diagonal_positions.append(pos)
+    
+    # First, try to fill all diagonal positions according to priority order
+    for i, j in all_diagonal_positions:
+        filled = False
+        # Try each color in the priority list
+        for priority_color in diagonal_colors:
+            if color_counts[priority_color] > 0:
+                grid[i][j] = priority_color
+                color_counts[priority_color] -= 1
+                filled = True
+                break
+        
+        # If no priority color is available, try any color
+        if not filled:
             for color in 'RGB':
                 if color_counts[color] > 0:
                     grid[i][j] = color
                     color_counts[color] -= 1
+                    filled = True
                     break
-
-    # Fill the rest of the grid with available colors
+    
+    # Then fill the rest of the grid
     for i in range(dimension):
         for j in range(dimension):
             if grid[i][j] is None:
@@ -67,7 +88,13 @@ def fill_grid_diagonal(dimension, red, green, blue, diagonal_colors):
                         grid[i][j] = color
                         color_counts[color] -= 1
                         break
-
+    
+    # Check if all cells are filled
+    for i in range(dimension):
+        for j in range(dimension):
+            if grid[i][j] is None:
+                return None  # Could not fill the entire grid
+    
     return grid
 
 import random
