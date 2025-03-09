@@ -1,5 +1,5 @@
 <template>
-    <div id="particles-js"></div>
+    <div id="vanta-bg"></div>
     <div class="container">
       <h1 class="gradient-text fixed-width">Grid Generator</h1>
       <h2 class="subheading">Simplify your Grid creation</h2>
@@ -8,28 +8,59 @@
     </div>
   </template>
   
+  
   <script>
-  export default {
-    methods: {
-      navigateToHelloWorld() {
-        this.$router.push("/hello");
-      },
+  import * as THREE from 'three';
+  import NET from "vanta/dist/vanta.net.min.js"; // Import Vanta.js effect
+
+export default {
+  data() {
+    return {
+      vantaEffect: null, // Store Vanta instance
+    };
+  },
+  methods: {
+    navigateToHelloWorld() {
+      this.$router.push("/hello");
     },
-  };
+  },
+  mounted() {
+    this.vantaEffect = NET({
+      el: "#vanta-bg",
+      THREE: THREE,
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.0,
+      minWidth: 200.0,
+      scale: 1.0,
+      scaleMobile: 1.0,
+      color: 0x000000, // Line color
+      backgroundColor: 0xffeee6, // Background color
+      spacing: 18.0,
+    });
+  },
+  beforeUnmount() {
+    if (this.vantaEffect) {
+      this.vantaEffect.destroy();
+      this.vantaEffect = null;
+    }
+  },
+};
   </script>
   
   <style scoped>
   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap");
   
-  #particles-js {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    background: #ffffff; /* Optional: You can change this */
-  }
+  #vanta-bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
   
   .container {
   max-width: 700px;
@@ -42,6 +73,7 @@
   justify-content: center;
   min-height: 60vh; /* Ensures full viewport height */
   padding-top: 0; /* Remove unnecessary top padding */
+  position: relative;
 }
   
   .gradient-text {
