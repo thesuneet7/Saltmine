@@ -3,15 +3,15 @@
     <div class="container">
       <h1 class="gradient-text fixed-width">Grid Generator</h1>
       <h2 class="subheading">Simplify your Grid creation</h2>
-      <p class="description">An easy-to-use tool for generating customizable grids with constraints.</p>
+      <p class="description">An easy-to-use AI tool for generating customizable grids with constraints.</p>
       <button class="navigate-btn" @click="navigateToHelloWorld">Start</button>
     </div>
   </template>
   
   
   <script>
-  import * as THREE from 'three';
-  import NET from "vanta/dist/vanta.net.min.js"; // Import Vanta.js effect
+  //import * as THREE from 'three';
+  //import NET from "vanta/dist/vanta.net.min.js"; // Import Vanta.js effect
 
 export default {
   data() {
@@ -23,22 +23,42 @@ export default {
     navigateToHelloWorld() {
       this.$router.push("/hello");
     },
+    initVantaEffect() {  // Moved inside methods
+      this.vantaEffect = window.VANTA.NET({
+        el: "#vanta-bg",
+        THREE: window.THREE,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.0,
+        minWidth: 200.0,
+        scale: 1.0,
+        scaleMobile: 1.0,
+        color: 0xff5531,
+        lineColor: 0xff0000,  // Line color
+        backgroundColor: 0xfff8f6,
+        points: 8.00,
+        maxDistance: 18.00,
+        spacing: 18.0
+      });
+    }
   },
   mounted() {
-    this.vantaEffect = NET({
-      el: "#vanta-bg",
-      THREE: THREE,
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      minHeight: 200.0,
-      minWidth: 200.0,
-      scale: 1.0,
-      scaleMobile: 1.0,
-      color: 0x000000, // Line color
-      backgroundColor: 0xffeee6, // Background color
-      spacing: 18.0,
-    });
+    // Script loading logic
+    const threeScript = document.createElement('script');
+    threeScript.src = 'https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js';
+    
+    const vantaScript = document.createElement('script');
+    vantaScript.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js';
+
+    threeScript.onload = () => {
+      vantaScript.onload = () => {
+        this.initVantaEffect();  // Now properly references the method
+      };
+      document.head.appendChild(vantaScript);
+    };
+    
+    document.head.appendChild(threeScript);
   },
   beforeUnmount() {
     if (this.vantaEffect) {
@@ -59,7 +79,6 @@ export default {
   z-index: -1;
   top: 0;
   left: 0;
-  pointer-events: none;
 }
   
   .container {
