@@ -4,7 +4,14 @@
       <h1 class="gradient-text fixed-width">Grid Generator</h1>
       <h2 class="subheading">Simplify your Grid creation</h2>
       <p class="description">An easy-to-use AI tool for generating customizable grids with constraints.</p>
-      <button class="navigate-btn" @click="navigateToHelloWorld">Start</button>
+      
+      <!-- Input Box -->
+      <textarea
+      class="input-box"
+      placeholder="Enter your grid constraints here"
+      ></textarea>
+
+      <button class="navigate-btn" @click="navigateToHelloWorld">Generate</button>
     </div>
   </template>
   
@@ -127,6 +134,27 @@ export default {
     max-width: 100%;
     white-space: nowrap;
   }
+
+  .input-box {
+  width: 100%;
+  height: 48px;
+  padding: 12px;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  border: 2px solid #595959;
+  border-radius: 12px;
+  outline: none;
+  background-color: #fafafa;
+  color: #333;
+  box-shadow: 0px 0px 8px rgba(66, 161, 255, 0.4);
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.input-box:focus {
+  border-color: #ff9a88;
+  box-shadow: 0px 0px 12px rgba(255, 141, 120, 0.5);
+}
   .navigate-btn {
     background-color: #ffffff;
     color: rgb(192, 120, 120);
