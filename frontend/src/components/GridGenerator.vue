@@ -6,12 +6,32 @@
       <p class="description">An easy-to-use AI tool for generating customizable grids with constraints.</p>
       
       <!-- Input Box -->
+      <div class="input-wrapper">
       <textarea
-      class="input-box"
-      placeholder="Enter your grid constraints here"
+        class="input-box"
+        placeholder="Enter your grid constraints here"
+        v-model="inputText"
       ></textarea>
+      <button class="send-btn" @click="generateGrid">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12l7-7 7 7"></path>
+        <path d="M12 19V5"></path>
+        </svg>
+      </button>
+      </div>
+      <!-- Loading Indicator -->
+      <div v-if="loading" class="loader">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
 
-      <button class="navigate-btn" @click="navigateToHelloWorld">Generate</button>
+      <!-- Revealing Response -->
+      <div v-if="displayText" class="response-box">
+        {{ displayText }}
+      </div>
+
+      <button class="navigate-btn" @click="navigateToHelloWorld">Choose Constraint</button>
     </div>
   </template>
   
@@ -19,10 +39,15 @@
   <script>
   //import * as THREE from 'three';
   //import NET from "vanta/dist/vanta.net.min.js"; // Import Vanta.js effect
+  import axios from "axios";
 
 export default {
   data() {
     return {
+      inputText: "",
+      response: "",
+      displayText: "",
+      loading: false,
       vantaEffect: null, // Store Vanta instance
     };
   },
@@ -48,6 +73,37 @@ export default {
         maxDistance: 18.00,
         spacing: 18.0
       });
+    },
+    async generateGrid() {
+      if (!this.inputText.trim()) return;
+      this.response = "";
+      this.displayText = "";
+      this.loading = true;
+
+      try {
+        const res = await axios.post("http://localhost:8000/generate-gemini", {
+          text: this.inputText,
+        });
+        this.response = res.data.response;
+        this.loading = false;
+        this.revealText();
+      } catch (error) {
+        console.error("Error:", error);
+        this.response = "Failed to generate response.";
+        this.loading = false;
+      }
+    },
+    revealText() {
+      let index = 0;
+      this.displayText = "";
+      const interval = setInterval(() => {
+        if (index < this.response.length) {
+          this.displayText += this.response[index];
+          index++;
+        } else {
+          clearInterval(interval);
+        }
+      }, 30); // Typing speed (30ms)
     }
   },
   mounted() {
@@ -101,6 +157,34 @@ export default {
   padding-top: 0; /* Remove unnecessary top padding */
   position: relative;
 }
+
+  .input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .send-btn {
+    position: absolute;
+    right: -21px;
+    bottom: 34px;
+    width: 32px;
+    height: 32px;
+    background-color: #595959;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 10px rgba(30, 143, 255, 0.6);
+    transition: background-color 0.2s ease;
+  }
+
+  .send-btn:hover {
+    background-color: #2d2d2d;
+  }
   
   .gradient-text {
     font-size: 5rem;
@@ -186,6 +270,73 @@ export default {
   .navigate-btn:hover {
     box-shadow: 0px 0px 20px rgba(30, 144, 255, 0.4);
     transform: scale(1.05);
+  }
+
+  .loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: #1e90ff;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+
+  .dot:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes pulse {
+    0%, 80%, 100% {
+      transform: scale(0);
+      opacity: 0.3;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+    .response-box {
+    width: 100%;
+    transform: translateX(3px);
+    padding: 10px;
+    margin: auto;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-top: 2px;
+    font-size: 16px;
+    color: #333;
+    white-space: pre-wrap;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease;
+    text-align: left;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   </style>
   
