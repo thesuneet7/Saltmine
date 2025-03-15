@@ -11,6 +11,7 @@
         class="input-box"
         placeholder="Enter your grid constraints here"
         v-model="inputText"
+        @keydown.enter.prevent="generateGrid"
       ></textarea>
       <button class="send-btn" @click="generateGrid">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -225,19 +226,18 @@ export default {
   padding: 12px;
   font-family: "Poppins", sans-serif;
   font-size: 16px;
-  border: 2px solid #595959;
+  border: 2px solid #7a7a7a;
   border-radius: 12px;
   outline: none;
   background-color: #fafafa;
-  color: #333;
   box-shadow: 0px 0px 8px rgba(66, 161, 255, 0.4);
   margin-bottom: 20px;
   transition: border-color 0.3s ease;
 }
 
 .input-box:focus {
-  border-color: #ff9a88;
-  box-shadow: 0px 0px 12px rgba(255, 141, 120, 0.5);
+  border-color: #4f4f4f;
+  box-shadow: 0px 0px 12px rgba(255, 211, 203, 0.5);
 }
   .navigate-btn {
     background-color: #ffffff;
@@ -284,7 +284,7 @@ export default {
     width: 8px;
     height: 8px;
     margin: 0 4px;
-    background-color: #1e90ff;
+    background-color: #575757;
     border-radius: 50%;
     animation: pulse 1.5s infinite ease-in-out;
   }
