@@ -252,6 +252,7 @@ export default {
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 0px 10px rgba(30, 143, 255, 0.6);
+    margin-top: 16px;
   }
   
   .navigate-btn::before {
