@@ -3,18 +3,48 @@
   <div class="container">
     <h1 class="gradient-text">Grid Generator</h1>
     
-    <div class="tabs">
-      <button v-for="tab in tabs" :key="tab.id" :class="{ active: activeTab === tab.id }" @click="setActiveTab(tab.id)">{{ tab.label }}</button>
-    </div>
+    <div class="right-column">
+      <div class="form-container" v-if="activeTab">
+        <div class="constraint-selector">
+          <h3>Choose Constraint : </h3>
+          <select v-model="activeTab" class="constraint-select">
+            <option v-for="tab in tabs" :key="tab.id" :value="tab.id">
+              {{ tab.label }}
+            </option>
+          </select>
+        </div>
 
-    <div class="form-container" v-if="activeTab">
-      <template v-for="(value, key) in formValues[activeTab]" :key="key">
-        <label>{{ fieldLabels[key] || key }}:</label>
-        <input v-if="key.includes('ColorsInput') || key === 'block_color'" type="text" v-model="formValues[activeTab][key]" />
-        <input v-else type="number" v-model="formValues[activeTab][key]" />
-      </template>
+    
+        <template v-for="(value, key) in formValues[activeTab]" :key="key">
+    <div class="form-row">
+      <div class="input-slider-group" v-if="!key.includes('ColorsInput') && key !== 'block_color'">
+        <input 
+          type="number" 
+          v-model="formValues[activeTab][key]"
+          :placeholder="fieldLabels[key] || key"
+          min="0"
+          max="50"
+        >
+        <input
+          type="range"
+          v-model="formValues[activeTab][key]"
+          min="0"
+          max="50"
+          class="slider"
+        >
+      </div>
+      <input 
+        v-else 
+        type="number" 
+        v-model="formValues[activeTab][key]"
+        :placeholder="fieldLabels[key] || key"
+      />
+    </div>
+  </template>
       <button class="generate-btn" @click="generateGrid">Generate Grid</button>
     </div>
+
+
     
     <div v-if="grid.length" class="grid-container">
       <table>
@@ -28,6 +58,7 @@
       <p>{{ error }}</p>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -46,12 +77,12 @@ export default {
         { id: 'patternnn', label: 'Pattern' }
       ],
       formValues: {
-        periphery: { n: 5, m: 5, red: 5, green: 5, blue: 5, peripheryColorsInput: 'RGB' },
-        diagonal: { dimension: 5, red: 5, green: 5, blue: 5, diagonalColorsInput: 'RGB' },
-        adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5, adjColorsInput: 'RGB' },
-        no_adj_const: { n: 5, m: 5, red: 5, green: 5, blue: 5 },
-        block: { n: 5, m: 5, red: 5, green: 5, blue: 5, block_color: 'R', block_size: 5, block_count: 5 },
-        patternnn: { n: 5, m: 5, red: 5, green: 5, blue: 5, pattern_length: 5, patternColorsInput: 'RGB' }
+        periphery: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '' },
+        diagonal: { dimension: null, red: null, green: null, blue: null, diagonalColorsInput: '' },
+        adj_const: { n: null, m: null, red: null, green: null, blue: null, adjColorsInput: '' },
+        no_adj_const: { n: null, m: null, red: null, green: null, blue: null },
+        block: { n: null, m: null, red: null, green: null, blue: null, block_color: '', block_size: null, block_count: null },
+        patternnn: { n: null, m: null, red: null, green: null, blue: null, pattern_length: null, patternColorsInput: '' }
       },
       fieldLabels: {
   n: "Rows",
@@ -127,10 +158,69 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
 
 .container {
-  max-width: 600px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  gap: 20px;
+  max-width: 100%;
   margin: auto;
   font-family: 'Poppins', sans-serif;
   text-align: center;
+}
+
+.gradient-text {
+  grid-column: 1 / -1;
+}
+
+.right-column {
+  grid-column: 2;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.tabs {
+  display: none;
+}
+
+.constraint-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  width: 96%;
+  gap: 20px;
+}
+
+.constraint-selector h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #363636;
+  white-space: nowrap;
+}
+
+.constraint-select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #4b4b4b;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.constraint-select:focus {
+  outline: none;
+  border-color: #1e90ff;
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.2);
+}
+
+.grid-container {
+  justify-content: flex-start;
 }
 
 .gradient-text {
@@ -167,19 +257,99 @@ button:hover {
   transform: scale(1.05);
 }
 .form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
+  align-items: flex-start;
 }
-input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  width: 80%;
+
+.form-row {
+  display: flex;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.input-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+input[type="number"] {
+  width: 80px;
+  text-align: center;
+}
+
+.slider {
+  flex-grow: 1;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  outline: none;
+  margin-right: 30px;
+}
+
+/* Slider Thumb */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #767676;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(90deg, #1e90ff, #ff6347);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+
+label {
+  display: none;
+}
+
+input[type="number"], 
+input[type="text"] {
+  width: 20%;
+  padding: 12px;
+  border: 2px solid #4b4b4b;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
+
+input[type="number"]::placeholder,
+input[type="text"]::placeholder {
+  color: #666;
+  opacity: 0.8;
+}
+
+input:focus {
+  outline: none;
+  border-color: #1e90ff;
+  box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.2);
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .generate-btn {
   background-color: #ffffff;
   color: rgb(192, 120, 120);
@@ -193,6 +363,7 @@ input {
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   box-shadow: 0px 0px 10px rgba(30, 143, 255, 0.6);
+  margin-top: 30px;
 }
 
 .generate-btn::before {

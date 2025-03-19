@@ -32,7 +32,7 @@
         {{ displayText }}
       </div>
 
-      <button class="navigate-btn" @click="navigateToHelloWorld">Choose Constraint</button>
+      <button class="navigate-btn" @click="navigateToHelloWorld">Start making your grid</button>
     </div>
   </template>
   
