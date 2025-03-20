@@ -165,7 +165,9 @@ export default {
   }
 
   .send-btn {
+    display: none;
     position: absolute;
+
     right: -21px;
     bottom: 34px;
     width: 32px;
@@ -176,7 +178,6 @@ export default {
     border-radius: 50%;
     cursor: pointer;
     font-size: 18px;
-    display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0px 0px 10px rgba(30, 143, 255, 0.6);
@@ -221,6 +222,7 @@ export default {
   }
 
   .input-box {
+  display: none;
   width: 100%;
   height: 48px;
   padding: 12px;
