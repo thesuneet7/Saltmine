@@ -4,7 +4,8 @@ from app.models import GridRequest
 from pydantic import BaseModel
 import google.generativeai as genai
 import os
-from app.services import fill_grid_periphery, fill_grid_diagonal, adjacency_const, no_adjcol, block_col, patternn
+from app.services import fill_grid_periphery, fill_grid_diagonal, adjacency_const, no_adjcol, block_col, patternn, diagonal_periphery_pattern, diagonal_adj, periphery_bb, diagonal_periphery_priority, periphery_pattern, periphery_nonadj, adj_dia_peri
+
 
 # Load your API key
 #GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -72,6 +73,20 @@ def generate_grid(request: GridRequest):
         grid = block_col(request.n, request.m, request.red, request.green, request.blue, request.block_color, request.block_size, request.block_count)
     elif request.constraint_type == "patternnn":
         grid = patternn(request.n, request.m, request.red, request.green, request.blue, request.pattern_length, request.pattern)
+    elif request.constraint_type == "diagonal_adj_const":
+        grid = diagonal_adj(request.dimension, request.red, request.green, request.blue, request.diagonal_colors, request.adjacency_cons)
+    elif request.constraint_type == "periphery_bb_const":
+        grid = periphery_bb(request.n, request.m, request.red, request.green, request.blue, request.periphery_colors, request.block_color, request.block_size, request.block_count)
+    elif request.constraint_type == "dpp1_const":
+        grid = diagonal_periphery_pattern(request.dimension, request.red, request.green, request.blue, request.periphery_colors, request.diagonal_colors)
+    elif request.constraint_type == "dpp2_const":
+        grid = diagonal_periphery_priority(request.dimension, request.red, request.green, request.blue, request.periphery_colors, request.diagonal_colors, request.constraint_priority)
+    elif request.constraint_type == "periphery_pattern_const":
+        grid = periphery_pattern(request.n, request.m, request.red, request.green, request.blue, request.periphery_colors, request.pattern_length, request.pattern)
+    elif request.constraint_type == "periphery_nadj_const":
+        grid = periphery_nonadj(request.n, request.m, request.red, request.green, request.blue, request.periphery_colors)
+    elif request.constraint_type == "adp_const":
+        grid = adj_dia_peri(request.dimension, request.red, request.green, request.blue, request.periphery_colors, request.diagonal_colors, request.adjacent_tiles)
     else:
         return {"error": "Invalid constraint type"}
     

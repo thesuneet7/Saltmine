@@ -74,7 +74,7 @@
       </div>
       <input 
         v-else 
-        type="number" 
+        type="text" 
         v-model="formValues[activeTab][key]"
         :placeholder="fieldLabels[key] || key"
       />
@@ -107,7 +107,14 @@ export default {
         { id: 'adj_const', label: 'Adjacency' },
         { id: 'no_adj_const', label: 'No Adjacency' },
         { id: 'block', label: 'Coloured Block' },
-        { id: 'patternnn', label: 'Pattern' }
+        { id: 'patternnn', label: 'Pattern' },
+        { id: 'diagonal_adj_const', label: 'Diagonal & Adjacent' },
+        { id: 'periphery_bb_const', label: 'Periphery & Big-Block' },
+        { id: 'dpp1_const', label: 'Periphery & Diagonal' },
+        { id: 'dpp2_const', label: 'Periphery & Diagonal with Priority' },
+        { id: 'periphery_pattern_const', label: 'Periphery & Pattern'},
+        { id: 'periphery_nadj_const', label: 'Periphery & Non-Adjacent'},
+        { id: 'adp_const', label: 'Periphery & Diagonal & Adjacent' }
       ],
       formValues: {
         periphery: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '' },
@@ -115,7 +122,14 @@ export default {
         adj_const: { n: null, m: null, red: null, green: null, blue: null, adjColorsInput: '' },
         no_adj_const: { n: null, m: null, red: null, green: null, blue: null },
         block: { n: null, m: null, red: null, green: null, blue: null, block_color: '', block_size: null, block_count: null },
-        patternnn: { n: null, m: null, red: null, green: null, blue: null, pattern_length: null, patternColorsInput: '' }
+        patternnn: { n: null, m: null, red: null, green: null, blue: null, pattern_length: null, patternColorsInput: '' },
+        diagonal_adj_const: { dimension: null, red: null, green: null, blue: null, diagonalColorsInput: '', adjColorsInput: ''},
+        periphery_bb_const: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '', block_color: '', block_size: null, block_count: null },
+        dpp1_const: { dimension: null, red: null, green: null, blue: null, peripheryColorsInput: '', diagonalColorsInput: '' },
+        dpp2_const: { dimension: null, red: null, green: null, blue: null, peripheryColorsInput: '', diagonalColorsInput: '', constraint_priorityColorsInput: '' },
+        periphery_pattern_const: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '', pattern_length: null, patternColorsInput: '' },
+        periphery_nadj_const: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '' },
+        adp_const: {dimension: null, red: null, green: null, blue: null, peripheryColorsInput: '', diagonalColorsInput: '', adjacent_tilesColorsInput: '' }
       },
       fieldLabels: {
   n: "Rows",
@@ -131,7 +145,9 @@ export default {
   block_color: "Block Color",
   block_size: "Block Size",
   block_count: "Block Count",
-  pattern_length: "Pattern Length"
+  pattern_length: "Pattern Length",
+  constraint_priorityColorsInput: "diagonal or periphery?",
+  adjacent_tilesColorsInput: "Any two adjacent colors"
 },
       grid: [],
       error: null,
@@ -146,14 +162,30 @@ export default {
     generateGrid() {
       const form = this.formValues[this.activeTab];
       const payload = { ...form, constraint_type: this.activeTab };
-      if (Object.prototype.hasOwnProperty.call(form, 'peripheryColorsInput')) 
-        payload.periphery_colors = form.peripheryColorsInput.split('');
-      if (Object.prototype.hasOwnProperty.call(form, 'diagonalColorsInput')) 
-        payload.diagonal_colors = form.diagonalColorsInput.split('');
-      if (Object.prototype.hasOwnProperty.call(form, 'adjColorsInput')) 
-        payload.adjacency_cons = form.adjColorsInput.split('');
-      if (Object.prototype.hasOwnProperty.call(form, 'patternColorsInput')) 
-        payload.pattern = form.patternColorsInput.split('');
+
+      delete payload.peripheryColorsInput;
+      delete payload.diagonalColorsInput;
+      delete payload.adjColorsInput;
+      delete payload.patternColorsInput;
+      delete payload.adjacent_tilesColorsInput;
+
+
+      // Process color inputs only when they have content
+      if (form.peripheryColorsInput?.trim()) {
+        payload.periphery_colors = form.peripheryColorsInput.trim().split('');
+      }
+      if (form.diagonalColorsInput?.trim()) {
+        payload.diagonal_colors = form.diagonalColorsInput.trim().split('');
+      }
+      if (form.adjColorsInput?.trim()) {
+        payload.adjacency_cons = form.adjColorsInput.trim().split('');
+      }
+      if (form.patternColorsInput?.trim()) {
+        payload.pattern = form.patternColorsInput.trim().split('');
+      }
+      if (form.adjacent_tilesColorsInput?.trim()) {
+        payload.adjacent_tiles = form.adjacent_tilesColorsInput.trim().split('');
+      }
 
 
       
@@ -200,7 +232,7 @@ export default {
         } else {
           clearInterval(interval);
         }
-      }, 30); // Typing speed (30ms)
+      }, 500); // Typing speed (30ms)
     }
   },
 };
