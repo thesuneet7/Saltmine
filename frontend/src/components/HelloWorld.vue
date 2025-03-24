@@ -190,7 +190,7 @@ export default {
 
       
       console.log("Sending Payload:", payload);
-      axios.post('http://127.0.0.1:8000/generate-grid', payload)
+      axios.post(`${process.env.VUE_APP_API_URL}/generate-grid`, payload)
         .then(response => {
           this.grid = response.data.grid;
           this.error = null;
@@ -210,7 +210,7 @@ export default {
       this.loading = true;
 
       try {
-        const res = await axios.post("http://localhost:8000/generate-gemini", {
+        const res = await axios.post(`${process.env.VUE_APP_API_URL}/generate-gemini`, {
           text: this.inputText,
         });
         this.response = res.data.response;
