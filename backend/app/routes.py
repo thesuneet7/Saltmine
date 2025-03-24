@@ -40,6 +40,26 @@ Pattern Constraint-
 This program efficiently generates a structured grid by strategically placing user-defined tile patterns while ensuring the exact distribution of available tiles. Any remaining spaces are populated randomly while maintaining the specified tile distribution. This approach is useful for applications requiring structured pattern repetition with controlled randomness.
 Weighted Positional Constraint -
 This code efficiently places user-defined colors in a grid by prioritizing both optimal quadrant placement and synergy with neighboring cells. It assigns colors based on a weighted probability distribution, ensuring they are placed in the most suitable quadrant while also maximizing adjacency preferences. By balancing these two factors simultaneously, the algorithm optimizes the overall color distribution, ensuring that each cell is positioned in the best possible location with the most favorable neighbors.
+Periphery & Non-adjacent Constraint
+This program places elements along a grid’s periphery in a user-defined order, ensuring controlled edge placement. It then fills the interior, optionally enforcing non-adjacency to avoid identical neighboring tiles, promoting diversity. This approach blends structured boundaries with flexible interior placement, supporting collaboration and balanced distribution.
+ 
+Periphery & Big Colour Constraint
+This program places elements along a grid’s periphery in a user-specified order, ensuring controlled edge placement. It then adds large, square blocks of a chosen color inside, clustering roles into focused zones while respecting color counts. Remaining spaces are filled randomly, combining boundary control with efficient space use.
+ 
+Periphery & Pattern Constraint
+This program places elements along a grid’s periphery in a user-specified order, ensuring controlled edge placement. It then applies a user-defined pattern of colors (e.g., RRGB) across interior rows, repeating it as many times as color counts allow, while maintaining exact tile distribution. Remaining spaces are filled randomly, blending structured boundary control with patterned consistency for efficient workspace design.
+ 
+Diagonal & Periphery Constraint
+This program places elements along a square grid’s periphery and diagonals (main and anti-diagonal) in user-specified color patterns, ensuring controlled placement at edges and diagonal lines. It prioritizes these patterns using available color counts (R, G, B), then fills remaining spaces randomly while maintaining the exact tile distribution. This approach blends structured boundary and diagonal organization with flexible interior placement for balanced workspace design.
+
+Periphery & Diagonal Constraint (Priority)
+This program fills a square grid by prioritizing either periphery or diagonal placement (main and anti-diagonal) based on user choice, using specified color patterns (R, G, B) for each. It applies the higher-priority constraint first, ensuring controlled placement along edges or diagonals, then fills the lower-priority area and remaining spaces randomly while respecting color counts. This flexible, priority-driven approach balances structured layout with adaptability for workspace optimization.
+
+Diagonal & Adjacency Constraint
+This program places user-specified colors (R, G, B) along a square grid’s main and anti-diagonals in a given order, ensuring controlled diagonal placement. It then fills the remaining spaces, enforcing adjacency between two selected colors while preventing other tiles from having multiple identical neighbors, promoting balanced diversity. This combines structured diagonal organization with adjacency-driven placement for effective workspace layouts.
+
+Adjacency + Periphery + Diagonal Constraint
+This program places colors (R, G, B) along a square grid’s periphery and diagonals (main and anti-diagonal) in user-specified orders, ensuring controlled edge and diagonal placement. It then enforces adjacency between two chosen colors while preventing excessive identical neighbors elsewhere, filling remaining spaces randomly. This integrates structured boundaries and diagonals with adjacency-driven diversity for optimized workspace layouts.
 
 Example input: 
 Q. I want to design a floor plan such that all types of occupation groups get a chance to interact with each other. I do not want people of the same occupation sitting in a group and just acting like chauvinists. I want all architects, engineers, and design people to bond and work effectively.
