@@ -65,7 +65,7 @@ Example input:
 Q. I want to design a floor plan such that all types of occupation groups get a chance to interact with each other. I do not want people of the same occupation sitting in a group and just acting like chauvinists. I want all architects, engineers, and design people to bond and work effectively.
 
 Answer – "Choose the “No two adjacent” constraint and give your specified inputs"
-the answer could also be combination of constraints as stated above.
+the answer could also be combination of constraints as stated above (not necessary always).
 Only answer what constraint to choose in two sentences.
 Actual Input: 
  {input_text}'''
