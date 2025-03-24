@@ -232,7 +232,7 @@ export default {
         } else {
           clearInterval(interval);
         }
-      }, 500); // Typing speed (30ms)
+      }, 10); // Typing speed (30ms)
     }
   },
 };
