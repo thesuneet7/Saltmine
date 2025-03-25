@@ -575,11 +575,11 @@ def diagonal_periphery_pattern(dimension, red, green, blue, periphery_colors, di
     total_cells = dimension * dimension
     if red + green + blue != total_cells:
         print(f"Error: The sum of tiles must equal {total_cells} (dimension²). Please try again.")
-        exit()
-    total_cells = dimension * dimension
+        return None
     
     grid = [[None] * dimension for _ in range(dimension)]
     color_counts = {'R': red, 'G': green, 'B': blue}
+    all_colors = ['R', 'G', 'B']
 
     periphery_positions = []
     for j in range(dimension):
@@ -604,11 +604,12 @@ def diagonal_periphery_pattern(dimension, red, green, blue, periphery_colors, di
             grid[i][j] = diagonal_colors[diagonal_index]
             color_counts[diagonal_colors[diagonal_index]] -= 1
         else:
-            for color in 'RGB':
-                if color_counts[color] > 0:
-                    grid[i][j] = color
-                    color_counts[color] -= 1
-                    break
+            # Randomly select from available colors with remaining count
+            available_colors = [color for color in all_colors if color_counts[color] > 0]
+            if available_colors:
+                chosen_color = random.choice(available_colors)
+                grid[i][j] = chosen_color
+                color_counts[chosen_color] -= 1
         diagonal_index = (diagonal_index + 1) % len(diagonal_colors) if diagonal_colors else 0
 
     periphery_index = 0
@@ -620,23 +621,20 @@ def diagonal_periphery_pattern(dimension, red, green, blue, periphery_colors, di
             grid[i][j] = periphery_colors[periphery_index]
             color_counts[periphery_colors[periphery_index]] -= 1
         else:
-            for color in 'RGB':
-                if color_counts[color] > 0:
-                    grid[i][j] = color
-                    color_counts[color] -= 1
-                    break
+            # Randomly select from available colors with remaining count
+            available_colors = [color for color in all_colors if color_counts[color] > 0]
+            if available_colors:
+                chosen_color = random.choice(available_colors)
+                grid[i][j] = chosen_color
+                color_counts[chosen_color] -= 1
         periphery_index = (periphery_index + 1) % len(periphery_colors) if periphery_colors else 0
 
     empty_positions = [(i, j) for i in range(dimension) for j in range(dimension) if grid[i][j] is None]
     random.shuffle(empty_positions)
     
     remaining_colors = []
-    for _ in range(color_counts['R']):
-        remaining_colors.append('R')
-    for _ in range(color_counts['G']):
-        remaining_colors.append('G')
-    for _ in range(color_counts['B']):
-        remaining_colors.append('B')
+    for color, count in color_counts.items():
+        remaining_colors.extend([color] * count)
     random.shuffle(remaining_colors)
     
     for i, (x, y) in enumerate(empty_positions):
