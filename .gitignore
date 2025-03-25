@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .qodo
 .env
+backend/__pycache__/
