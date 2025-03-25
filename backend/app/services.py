@@ -1,109 +1,95 @@
 def fill_grid_periphery(n, m, red, green, blue, periphery_colors):
-        grid = [[None] * m for _ in range(n)]  # Create a grid with the specified n and columns
-        color_counts = {'R': red, 'G': green, 'B': blue}
-
-        # Define periphery positions
-        periphery_positions = [(0, j) for j in range(m)] + [(n - 1, j) for j in range(m)] + \
-                            [(i, 0) for i in range(1, n - 1)] + [(i, m - 1) for i in range(1, n - 1)]
-
-        # Shuffle the periphery positions for randomness
-        random.shuffle(periphery_positions)
-
-        # Assign periphery colors
-        index = 0
-        for i, j in periphery_positions:
-            if index < len(periphery_colors) and color_counts[periphery_colors[index]] > 0:
-                grid[i][j] = periphery_colors[index]
-                color_counts[periphery_colors[index]] -= 1
-                index += 1
-            else:
-                # If selected periphery colors run out, shuffle available colors and use one
-                available_colors = [color for color in 'RGB' if color_counts[color] > 0]
-                random.shuffle(available_colors)  # Shuffle the available colors
-                for color in available_colors:
-                    if color_counts[color] > 0:
-                        grid[i][j] = color
-                        color_counts[color] -= 1
-                        break
-
-        # Collect remaining positions for filling (inside grid)
-        remaining_positions = [(i, j) for i in range(n) for j in range(m) if grid[i][j] is None]
-
-        # Shuffle the remaining positions
-        random.shuffle(remaining_positions)
-
-        # Create a list of available colors based on the remaining counts
-        available_colors = []
-        for color, count in color_counts.items():
-            available_colors.extend([color] * count)
-
-        # Shuffle the available colors
-        random.shuffle(available_colors)
-
-        # Fill the remaining positions with shuffled colors
-        for pos, color in zip(remaining_positions, available_colors):
-            i, j = pos
-            grid[i][j] = color
-
-        return grid
-
-def fill_grid_diagonal(dimension, red, green, blue, diagonal_colors):
-    grid = [[None] * dimension for _ in range(dimension)]
+    total_tiles = n * m
+    
+    if red + green + blue != total_tiles:
+        print(f"Invalid input! The total number of tiles ({red + green + blue}) must be equal to {total_tiles}.")
+        sys.exit(1)
+    
+    # Initialize the grid with None
+    grid = [[None] * m for _ in range(n)]
     color_counts = {'R': red, 'G': green, 'B': blue}
 
-    # Check if we have exactly the right number of colors to fill the grid
+    # Define periphery positions
+    periphery_positions = [(0, j) for j in range(m)] + [(n - 1, j) for j in range(m)] + \
+                          [(i, 0) for i in range(1, n - 1)] + [(i, m - 1) for i in range(1, n - 1)]
+
+    # Shuffle periphery positions to make selection random
+    random.shuffle(periphery_positions)
+
+    # Assign periphery colors in the order given by the user
+    for color in periphery_colors:
+        for i, j in periphery_positions:
+            if grid[i][j] is None and color_counts[color] > 0:
+                grid[i][j] = color
+                color_counts[color] -= 1
+
+    # Fill remaining periphery positions with available colors
+    for i, j in periphery_positions:
+        if grid[i][j] is None:
+            available_colors = [color for color in 'RGB' if color_counts[color] > 0]
+            if available_colors:
+                chosen_color = random.choice(available_colors)
+                grid[i][j] = chosen_color
+                color_counts[chosen_color] -= 1
+
+    # Collect empty positions
+    empty_positions = [(i, j) for i in range(n) for j in range(m) if grid[i][j] is None]
+    random.shuffle(empty_positions)  # Shuffle the empty positions
+
+    # Fill the shuffled empty positions with available colors
+    for i, j in empty_positions:
+        available_colors = [color for color in 'RGB' if color_counts[color] > 0]
+        if available_colors:
+            chosen_color = random.choice(available_colors)
+            grid[i][j] = chosen_color
+            color_counts[chosen_color] -= 1
+
+    return grid
+
+def fill_grid_diagonal(dimension, red, green, blue, diagonal_colors):
     total_cells = dimension * dimension
     total_colors = red + green + blue
 
     if total_colors != total_cells:
-        return None  # Incorrect number of colors
+        print(f"Error: Incorrect number of colors. Need exactly {total_cells}, but have {total_colors}.")
+        return
+    
+    grid = [[None] * dimension for _ in range(dimension)]
+    color_counts = {'R': red, 'G': green, 'B': blue}
 
     # Get all diagonal positions (both main diagonal and anti-diagonal)
     main_diagonal = [(i, i) for i in range(dimension)]
-    anti_diagonal = [(i, dimension-1-i) for i in range(dimension)]
+    anti_diagonal = [(i, dimension - 1 - i) for i in range(dimension)]
 
     # Remove duplicates (center cell in odd-sized grids)
     all_diagonal_positions = []
     for pos in main_diagonal + anti_diagonal:
         if pos not in all_diagonal_positions:
             all_diagonal_positions.append(pos)
-
+    
+    random.shuffle(all_diagonal_positions)
+    
     # First, try to fill all diagonal positions according to priority order
     for i, j in all_diagonal_positions:
         filled = False
-        # Try each color in the priority list
         for priority_color in diagonal_colors:
             if color_counts[priority_color] > 0:
                 grid[i][j] = priority_color
                 color_counts[priority_color] -= 1
                 filled = True
                 break
-
-        # If no priority color is available, try any color
-        if not filled:
-            for color in 'RGB':
-                if color_counts[color] > 0:
-                    grid[i][j] = color
-                    color_counts[color] -= 1
-                    filled = True
-                    break
-
-    # Then fill the rest of the grid
-    for i in range(dimension):
-        for j in range(dimension):
-            if grid[i][j] is None:
-                for color in 'RGB':
-                    if color_counts[color] > 0:
-                        grid[i][j] = color
-                        color_counts[color] -= 1
-                        break
-
-    # Check if all cells are filled
-    for i in range(dimension):
-        for j in range(dimension):
-            if grid[i][j] is None:
-                return None  # Could not fill the entire grid
-
+    
+    # Fill remaining empty positions
+    empty_positions = [(i, j) for i in range(dimension) for j in range(dimension) if grid[i][j] is None]
+    random.shuffle(empty_positions)
+    
+    for i, j in empty_positions:
+        available_colors = [color for color in 'RGB' if color_counts[color] > 0]
+        if available_colors:
+            chosen_color = random.choice(available_colors)
+            grid[i][j] = chosen_color
+            color_counts[chosen_color] -= 1
+    
     return grid
 
 
@@ -203,34 +189,23 @@ def no_adjcol(n, m, red, green, blue):
     def is_valid(grid, row, col, color, n, m):
         """Checks if placing the given color at (row, col) is valid."""
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
-
         for dr, dc in directions:
             r, c = row + dr, col + dc
             if 0 <= r < n and 0 <= c < m and grid[r][c] == color:
                 return False  # Adjacent tile has the same color
-
         return True
 
-    def solve(grid, row, col, color_counts, n, m):
-        """Recursively fills the grid ensuring no two adjacent tiles have the same color."""
-        if row == n:
-            return True  # Successfully filled the entire grid
-
-        next_row, next_col = (row, col + 1) if col + 1 < m else (row + 1, 0)
-
-        for color in ['R', 'G', 'B']:
-            if color_counts[color] > 0 and is_valid(grid, row, col, color, n, m):
-                grid[row][col] = color  # Place color
-                color_counts[color] -= 1
-
-                if solve(grid, next_row, next_col, color_counts, n, m):
-                    return True  # If valid solution found, return True
-
-                grid[row][col] = None  # Backtrack
-                color_counts[color] += 1
-
-        return False  # No valid color found
-
+    def solve(grid, positions, color_counts, n, m):
+        """Fills the grid ensuring no two adjacent tiles have the same color."""
+        random.shuffle(positions)  # Shuffle positions for randomness
+        
+        for row, col in positions:
+            available_colors = [color for color in ['R', 'G', 'B'] if color_counts[color] > 0 and is_valid(grid, row, col, color, n, m)]
+            if available_colors:
+                chosen_color = random.choice(available_colors)
+                grid[row][col] = chosen_color
+                color_counts[chosen_color] -= 1
+        
     total_tiles = n * m
     if red + green + blue != total_tiles:
         print("Invalid input: Total number of tiles does not match grid size!")
@@ -238,11 +213,22 @@ def no_adjcol(n, m, red, green, blue):
 
     grid = [[None for _ in range(m)] for _ in range(n)]
     color_counts = {'R': red, 'G': green, 'B': blue}
+    positions = [(i, j) for i in range(n) for j in range(m)]
+    random.shuffle(positions)  # Shuffle positions for randomness
+    solve(grid, positions, color_counts, n, m)
 
-    if not solve(grid, 0, 0, color_counts, n, m):
-        print("No valid grid configuration found!")
-        return None
-
+    # Collect remaining empty positions
+    empty_positions = [(i, j) for i in range(n) for j in range(m) if grid[i][j] is None]
+    random.shuffle(empty_positions)  # Shuffle for randomness
+    
+    # Fill remaining empty positions with available colors
+    for row, col in empty_positions:
+        available_colors = [color for color in ['R', 'G', 'B'] if color_counts[color] > 0]
+        if available_colors:
+            chosen_color = random.choice(available_colors)
+            grid[row][col] = chosen_color
+            color_counts[chosen_color] -= 1
+    
     return grid
 
 
@@ -309,67 +295,58 @@ import sys
 import random
 
 def patternn(n, m, red, green, blue, pattern_length, pattern):
-    """Generates an n × m grid using the specified tile pattern and fills remaining spaces randomly."""
-    def max_patterns(X, Y, Z, pattern):
-        x = pattern.count('R')
-        y = pattern.count('G')
-        z = pattern.count('B')
-        x = X // x if x > 0 else float('inf')
-        y = Y // y if y > 0 else float('inf')
-        z = Z // z if z > 0 else float('inf')
-        return min(x, y, z)
-
-    def fill_with_patterns(grid, pattern, pattern_length, color_counts, n, m, max_patterns):
-        row, applied_patterns = 0, 0
-        while applied_patterns < max_patterns and row < n:
-            for start_col in range(0, m, pattern_length):
+    if n * m != red + green + blue:
+        return "Error: The total number of colored cells does not match the grid size!", 0
+    if pattern_length > m:
+        return "\n❌ This configuration cannot be possible! The pattern length exceeds the number of columns.", 0
+    if len(pattern) != pattern_length:
+        return "\n❌ Invalid Pattern: The specified pattern length does not match the given pattern!", 0
+    def max_patterns_count(color_counts, pattern):
+        pattern_color_counts = {color: pattern.count(color) for color in set(pattern)}
+        return min(
+            (color_counts.get(color, 0) // count if count > 0 else float('inf'))
+            for color, count in pattern_color_counts.items()
+        )
+    def fill_remaining(grid, color_counts):
+        empty_positions = [(r, c) for r in range(n) for c in range(m) if grid[r][c] == ' ']
+        random.shuffle(empty_positions)
+        for r, c in empty_positions:
+            available_colors = [color for color in color_counts if color_counts[color] > 0]
+            if available_colors:
+                chosen_color = random.choice(available_colors)
+                grid[r][c] = chosen_color
+                color_counts[chosen_color] -= 1
+    def fill_with_patterns(grid, pattern, max_patterns_count):
+        applied_patterns = 0
+        n_positions = list(range(0, n))
+        random.shuffle(n_positions)
+        
+        for r in n_positions:
+            if applied_patterns >= max_patterns_count:
+                break
+            col_positions = list(range(0, m - pattern_length + 1))
+            random.shuffle(col_positions)
+            for start_col in col_positions:
                 end_col = start_col + pattern_length
-                if end_col > m:
+                if applied_patterns >= max_patterns_count:
                     break
-                pattern_slice = list(pattern[:end_col - start_col])
-                if all(color_counts[color] >= pattern_slice.count(color) for color in pattern_slice):
-                    grid[row][start_col:end_col] = pattern_slice
-                    for color in pattern_slice:
+                if all(grid[r][c] == ' ' for c in range(start_col, end_col)):
+                    for i, color in enumerate(pattern):
+                        grid[r][start_col + i] = color
                         color_counts[color] -= 1
                     applied_patterns += 1
-                if applied_patterns >= max_patterns:
-                    return
-            row += 1
-
-    def fill_remaining(grid, color_counts, n, m):
-        available_tiles = [color for color, count in color_counts.items() for _ in range(count)]
-        random.shuffle(available_tiles)
-        tile_index = 0
-        for row in range(n):
-            for col in range(m):
-                if grid[row][col] is None and tile_index < len(available_tiles):
-                    grid[row][col] = available_tiles[tile_index]
-                    tile_index += 1
-
-    total_tiles = n * m
-    given_tiles = red + green + blue
-    if given_tiles != total_tiles:
-        print("\n❌ Invalid Configuration: The total number of tiles does not match the grid size!")
-        sys.exit(1)
-    if pattern_length > m:
-        print("\n❌ This configuration cannot be possible! The pattern length exceeds the number of columns.")
-        sys.exit(1)
-    if len(pattern) != pattern_length:
-        print("\n❌ Invalid Pattern: The specified pattern length does not match the given pattern!")
-        sys.exit(1)
-
-    max_patterns_count = max_patterns(red, green, blue, pattern)
-    print(f"\n✅ Maximum number of patterns that can be formed: {max_patterns_count}")
-    if max_patterns_count == 0:
-        print("\n❌ This configuration cannot be possible!")
-        sys.exit(1)
-    
-    grid = [[None for _ in range(m)] for _ in range(n)]
+        return applied_patterns
+    grid = [[' ' for _ in range(m)] for _ in range(n)]
     color_counts = {'R': red, 'G': green, 'B': blue}
-    
-    fill_with_patterns(grid, pattern, pattern_length, color_counts, n, m, max_patterns_count)
-    fill_remaining(grid, color_counts, n, m)
-    
+
+    if max_patterns_count(color_counts, pattern) == 0:
+        return "\n❌ This configuration cannot be possible!", 0
+
+    patterns_applied = fill_with_patterns(grid, pattern, max_patterns_count(color_counts, pattern))
+    fill_remaining(grid, color_counts)
+
+    print(f"\nTotal patterns applied: {patterns_applied}")
+
     return grid
 
 def periphery_diagonal(dimension, red, green, blue, periphery_colors, diagonal_colors, constraint_priority="diagonal"):
