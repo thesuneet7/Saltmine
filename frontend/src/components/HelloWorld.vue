@@ -124,7 +124,7 @@ export default {
         block: { n: 10, m: 10, red: 20, green: 30, blue: 50, block_color: 'B', block_size: 3, block_count: 2 },
         patternnn: { n: 8, m: 8, red: 17, green: 19, blue: 28, pattern_length: 3, patternColorsInput: 'BBG' },
         diagonal_adj_const: { dimension: 10, red: 22, green: 30, blue: 48, diagonalColorsInput: 'R', adjColorsInput: 'GB'},
-        periphery_bb_const: { n: 10, m: 10, red: 25, green: 30, blue: 45, peripheryColorsInput: 'G', block_color: 'B', block_size: 3, block_count: 3 },
+        periphery_bb_const: { n: 10, m: 10, red: 25, green: 30, blue: 45, peripheryColorsInput: 'G', block_color: 'B', block_size: 4, block_count: 2 },
         dpp1_const: { dimension: 8, red: 23, green: 32, blue: 9, peripheryColorsInput: 'RG', diagonalColorsInput: 'BG' },
         dpp2_const: { dimension: 8, red: 24, green: 15, blue: 25, peripheryColorsInput: 'R', diagonalColorsInput: 'G', constraint_priorityColorsInput: 'diagonal' },
         periphery_pattern_const: { n: 10, m: 10, red: 30, green: 45, blue: 25, peripheryColorsInput: 'R', pattern_length: 3, patternColorsInput: 'GGB' },
