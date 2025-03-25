@@ -117,7 +117,7 @@ export default {
         { id: 'adp_const', label: 'Periphery & Diagonal & Adjacent' }
       ],
       formValues: {
-        periphery: { n: null, m: null, red: null, green: null, blue: null, peripheryColorsInput: '' },
+        periphery: { n: 8, m: 8, red: 20, green: 23, blue: 21, peripheryColorsInput: '' },
         diagonal: { dimension: null, red: null, green: null, blue: null, diagonalColorsInput: '' },
         adj_const: { n: null, m: null, red: null, green: null, blue: null, adjColorsInput: '' },
         no_adj_const: { n: null, m: null, red: null, green: null, blue: null },
