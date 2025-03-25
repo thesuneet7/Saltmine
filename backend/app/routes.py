@@ -49,7 +49,7 @@ This program places elements along a grid’s periphery in a user-specified orde
 Periphery & Pattern Constraint
 This program places elements along a grid’s periphery in a user-specified order, ensuring controlled edge placement. It then applies a user-defined pattern of colors (e.g., RRGB) across interior rows, repeating it as many times as color counts allow, while maintaining exact tile distribution. Remaining spaces are filled randomly, blending structured boundary control with patterned consistency for efficient workspace design.
  
-Diagonal & Periphery Constraint
+Diagonal & Periphery & Pattern Constraint
 This program places elements along a square grid’s periphery and diagonals (main and anti-diagonal) in user-specified color patterns, ensuring controlled placement at edges and diagonal lines. It prioritizes these patterns using available color counts (R, G, B), then fills remaining spaces randomly while maintaining the exact tile distribution. This approach blends structured boundary and diagonal organization with flexible interior placement for balanced workspace design.
 
 Periphery & Diagonal Constraint (Priority)

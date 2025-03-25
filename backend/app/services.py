@@ -233,61 +233,40 @@ def no_adjcol(n, m, red, green, blue):
 
 
 def block_col(n, m, red, green, blue, block_color, block_size, block_count):
-    """Generates a valid n × m grid with block_size × block_size blocks and fills remaining spaces randomly."""
-    def place_blocks(grid, block_color, block_size, block_count, color_counts):
-        """Places the required number of block_size × block_size blocks of a specific color in the grid."""
-        required_tiles = block_count * (block_size ** 2)
-
-        if required_tiles > color_counts[block_color]:
-            print(f"Error: Not enough {block_color} tiles to form {block_count} blocks of size {block_size}×{block_size}.")
-            return False
-
-        placed_blocks = 0
-        for _ in range(block_count):
-            found = False
-            for _ in range(100):
-                row = random.randint(0, n - block_size)
-                col = random.randint(0, m - block_size)
-
-                if all(grid[r][c] is None for r in range(row, row + block_size) for c in range(col, col + block_size)):
-                    for r in range(row, row + block_size):
-                        for c in range(col, col + block_size):
-                            grid[r][c] = block_color
-
-                    placed_blocks += 1
-                    color_counts[block_color] -= (block_size ** 2)
-                    found = True
-                    break
-
-            if not found:
-                print(f"Warning: Could not place all {block_count} blocks.")
-                return False
-
-        return True
-
-    def fill_remaining_tiles(grid, color_counts):
-        """Fills the remaining tiles randomly while ensuring total tile counts are met."""
-        available_positions = [(r, c) for r in range(n) for c in range(m) if grid[r][c] is None]
-        random.shuffle(available_positions)
-
-        for color in ['R', 'G', 'B']:
-            for _ in range(color_counts[color]):
-                if available_positions:
-                    row, col = available_positions.pop()
-                    grid[row][col] = color
-
-    total_tiles = n * m
-    if red + green + blue != total_tiles:
-        print("Error: The total number of tiles must be equal to n × m.")
-        return None
-
-    grid = [[None for _ in range(m)] for _ in range(n)]
+    grid = [[' ' for _ in range(m)] for _ in range(n)]
     color_counts = {'R': red, 'G': green, 'B': blue}
+    max_possible_blocks = min(block_count, color_counts.get(block_color, 0) // (block_size ** 2))
+    placed_blocks = 0
+    available_rows = list(range(0, n - block_size+1))
+    random.shuffle(available_rows)
+    
+    for row_index in available_rows:
+        if placed_blocks >= max_possible_blocks:
+            break
+        available_cols = list(range(0, m - block_size+1))
+        random.shuffle(available_cols)
+        for col_index in available_cols:
+            if placed_blocks >= max_possible_blocks:
+                break
+            if all(grid[r][c] == ' ' for r in range(row_index, row_index + block_size) for c in range(col_index, col_index + block_size)):
+                for r in range(row_index, row_index + block_size):
+                    for c in range(col_index, col_index + block_size):
+                        grid[r][c] = block_color
+                placed_blocks += 1
+                color_counts[block_color] -= (block_size ** 2)
+    
+    if placed_blocks < block_count:
+        print(f"Warning: Could only place {placed_blocks} out of {block_count} blocks.")
 
-    if not place_blocks(grid, block_color, block_size, block_count, color_counts):
-        return None
+    empty_positions = [(r, c) for r in range(n) for c in range(m) if grid[r][c] == ' ']
+    random.shuffle(empty_positions)
 
-    fill_remaining_tiles(grid, color_counts)
+    for r, c in empty_positions:
+        available_colors = [color for color in color_counts if color_counts[color] > 0]
+        if available_colors:
+            chosen_color = random.choice(available_colors)
+            grid[r][c] = chosen_color
+            color_counts[chosen_color] -= 1
 
     return grid
 
